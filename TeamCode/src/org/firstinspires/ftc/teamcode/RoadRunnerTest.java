@@ -2,10 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 @TeleOp(name = "RoadRunnerTest", group = "FTC2025")
 public class RoadRunnerTest extends LinearOpMode {
@@ -15,15 +15,24 @@ public class RoadRunnerTest extends LinearOpMode {
         Pose2d start_pos = new Pose2d(0, 0,0);
         drive.setPoseEstimate(start_pos);
 
-        TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-            .splineTo(new Vector2d(-24, 0), -90)
-            .splineTo(new Vector2d(24, 24), -90)
-            .splineTo(new Vector2d(-24, -24), 180)
-            .build();
+        Trajectory traj = drive.trajectoryBuilder(start_pos)
+                .lineToConstantHeading(new Vector2d(12, 0))
+                .build();
+
+        Trajectory traj2 = drive.trajectoryBuilder(traj.end())
+                .splineToConstantHeading(new Vector2d(-5, -12), 0)
+                .build();
 
         waitForStart();
+
         if (opModeIsActive()) {
-            drive.followTrajectorySequence(traj);
+            drive.followTrajectory(traj);
+            System.out.println(traj.end());
+            System.out.println(drive.getPoseEstimate());
+
+            drive.followTrajectory(traj2);
+            System.out.println(traj2.end());
+            System.out.println(drive.getPoseEstimate());
         }
     }
 }
