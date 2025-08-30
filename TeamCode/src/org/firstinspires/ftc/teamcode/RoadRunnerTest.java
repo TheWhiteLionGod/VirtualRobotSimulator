@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -21,9 +22,17 @@ public class RoadRunnerTest extends LinearOpMode {
         trajectories = new ArrayList<>();
 
         TrajectorySequence traj = drive.trajectorySequenceBuilder(start_pos)
-                .splineToConstantHeading(new Vector2d(12, 0), 0)
-                .turn(Math.toRadians(45))
-                .splineToConstantHeading(new Vector2d(-5, -5), 0)
+                .splineToLinearHeading(new Pose2d(2*12, 0, Math.toRadians(90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(0, -2*12, 0), 0)
+
+                .splineToLinearHeading(new Pose2d(2*12, 0, Math.toRadians(90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(0, -2*12, 0), 0)
+
+                .splineToLinearHeading(new Pose2d(2*12, 0, Math.toRadians(90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(0, -2*12, 0), 0)
+
+                .splineToSplineHeading(new Pose2d(4*12, 2*12, Math.toRadians(180)), Math.toRadians(180))
+
                 .build();
 
         trajectories.add(traj);
@@ -35,10 +44,21 @@ public class RoadRunnerTest extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-            for (TrajectorySequence test_traj : trajectories) {
-                drive.followTrajectorySequence(test_traj);
-                System.out.println(test_traj.end());
-                System.out.println(drive.getPoseEstimate());
+            for (TrajectorySequence traj : trajectories) {
+                // Moving Robot
+                drive.followTrajectorySequenceAsync(traj);
+
+                // Updating Robot Position
+                while (opModeIsActive() && drive.isBusy()) {
+                    drive.update();
+                    telemetry.addData("Robot Position", drive.getPoseEstimate());
+                    telemetry.update();
+                }
+
+                // Printing Deviation in Position Once Completed
+                telemetry.addData("Expected End Position", traj.end());
+                telemetry.addData("Current Position", drive.getPoseEstimate());
+                telemetry.update();
             }
         }
     }
