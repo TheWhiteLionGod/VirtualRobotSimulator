@@ -42,25 +42,31 @@ public class Dynabytes2025 extends LinearOpMode {
 
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(orientationOnRobot));
-
         imu.resetYaw();
 
         // Configuring Robot Position During Init
-        Pose2d start_pos = new Pose2d(0, 0,0);
+        Pose2d start_pos = null;
         while (!isStarted()) {
             if (gamepad1.dpad_left) {
-                System.out.println("RED TEAM + Away from Obelisk");
+                System.out.println("BLUE TEAM + Away from Obelisk");
                 start_pos = new Pose2d(-5.25 * 12, 2.75 * 12, Math.toRadians(0));
             } else if (gamepad1.dpad_right) {
-                System.out.println("BLUE TEAM + Away from Obelisk");
+                System.out.println("RED TEAM + Away from Obelisk");
                 start_pos = new Pose2d(-5.25 * 12, -2.75 * 12, Math.toRadians(0));
             } else if (gamepad1.dpad_up) {
                 System.out.println("RED TEAM + In Launching Zone");
+                start_pos = new Pose2d(4*12, -4*12, Math.toRadians(135));
 
             } else if (gamepad1.dpad_down) {
                 System.out.println("BLUE TEAM + In Launching Zone");
+                start_pos = new Pose2d(4*12, 4*12, Math.toRadians(225));
             }
 
+        }
+
+        if (start_pos == null) {
+            System.out.println("ROBOT NOT CONFIGURED");
+            return;
         }
 
         drive.setPoseEstimate(start_pos);
@@ -96,10 +102,11 @@ public class Dynabytes2025 extends LinearOpMode {
             }
 
             // Going to "Base"
-            if (gamepad1.dpad_up) {
-                System.out.println(drive.getPoseEstimate());
+            if (gamepad1.dpad_left) {
                 goToRedBase();
-                System.out.println(drive.getPoseEstimate());
+            }
+            else if (gamepad1.dpad_right) {
+                goToBlueBase();
             }
             //ENDS
         }
@@ -121,12 +128,25 @@ public class Dynabytes2025 extends LinearOpMode {
         }
     }
 
-    // This Function Will Take You to Your "Base"
+    // These Functions Will Take You to Your "Base"
     public void goToRedBase() {
         try {
             drive.followTrajectory(
                     drive.trajectoryBuilder(drive.getPoseEstimate())
                             .splineToLinearHeading(new Pose2d(-3.25*12, 2.75*12, Math.toRadians(0)), 0)
+                            .build()
+            );
+        }
+        catch (EmptyPathSegmentException e) {
+            System.out.println("Empty Path Segment Exception has Occurred\nThis means that the robot is already at the defined position");
+        }
+    }
+
+    public void goToBlueBase() {
+        try {
+            drive.followTrajectory(
+                    drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .splineToLinearHeading(new Pose2d(-3.25*12, -2.75*12, Math.toRadians(0)), 0)
                             .build()
             );
         }
