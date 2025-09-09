@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.path.EmptyPathSegmentException;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -8,11 +12,13 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @TeleOp(name = "Controller", group = "FTC2025")
 public class Dynabytes2025 extends LinearOpMode {
     DcMotor m1, m2, m3, m4;
     IMU imu;
+    SampleMecanumDrive drive;
     double yaw_angle;
     double gear_mode = 3.0;
     boolean on_gear_switch_cooldown = false;
@@ -28,27 +34,57 @@ public class Dynabytes2025 extends LinearOpMode {
         m1.setDirection(DcMotor.Direction.REVERSE);
         m2.setDirection(DcMotor.Direction.REVERSE);
 
+        drive = new SampleMecanumDrive(hardwareMap);
+
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(orientationOnRobot));
-
         imu.resetYaw();
-        waitForStart();
+
+        // Configuring Robot Position During Init
+        Pose2d start_pos = null;
+        while (!isStarted()) {
+            if (gamepad1.dpad_left) {
+                System.out.println("BLUE TEAM + Away from Obelisk");
+                start_pos = new Pose2d(-5.25 * 12, 2.75 * 12, Math.toRadians(0));
+            } else if (gamepad1.dpad_right) {
+                System.out.println("RED TEAM + Away from Obelisk");
+                start_pos = new Pose2d(-5.25 * 12, -2.75 * 12, Math.toRadians(0));
+            } else if (gamepad1.dpad_up) {
+                System.out.println("RED TEAM + In Launching Zone");
+                start_pos = new Pose2d(4*12, -4*12, Math.toRadians(135));
+
+            } else if (gamepad1.dpad_down) {
+                System.out.println("BLUE TEAM + In Launching Zone");
+                start_pos = new Pose2d(4*12, 4*12, Math.toRadians(225));
+            }
+
+        }
+
+        if (start_pos == null) {
+            System.out.println("ROBOT NOT CONFIGURED");
+            return;
+        }
+
+        drive.setPoseEstimate(start_pos);
 
         while (opModeIsActive()) {
             // START
             // Updating Yaw of Robot
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             yaw_angle = orientation.getYaw(AngleUnit.DEGREES);
+
+            // Update Position in Road Runner
+            drive.update();
     
             // Switching Gears
-            if (gamepad1.dpad_up) {
+            if (gamepad1.right_bumper) {
                 changeGearMode(1);
             }
-            else if (gamepad1.dpad_down) {
+            else if (gamepad1.left_bumper) {
                 changeGearMode(-1);
             }
 
@@ -63,6 +99,14 @@ public class Dynabytes2025 extends LinearOpMode {
             // Turning
             if (gamepad1.right_stick_x != 0) {
                 Turn(gamepad1.right_stick_x);
+            }
+
+            // Going to "Base"
+            if (gamepad1.dpad_left) {
+                goToRedBase();
+            }
+            else if (gamepad1.dpad_right) {
+                goToBlueBase();
             }
             //ENDS
         }
@@ -84,6 +128,33 @@ public class Dynabytes2025 extends LinearOpMode {
         }
     }
 
+    // These Functions Will Take You to Your "Base"
+    public void goToRedBase() {
+        try {
+            drive.followTrajectory(
+                    drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .splineToLinearHeading(new Pose2d(-3.25*12, 2.75*12, Math.toRadians(0)), 0)
+                            .build()
+            );
+        }
+        catch (EmptyPathSegmentException e) {
+            System.out.println("Empty Path Segment Exception has Occurred\nThis means that the robot is already at the defined position");
+        }
+    }
+
+    public void goToBlueBase() {
+        try {
+            drive.followTrajectory(
+                    drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .splineToLinearHeading(new Pose2d(-3.25*12, -2.75*12, Math.toRadians(0)), 0)
+                            .build()
+            );
+        }
+        catch (EmptyPathSegmentException e) {
+            System.out.println("Empty Path Segment Exception has Occurred\nThis means that the robot is already at the defined position");
+        }
+    }
+
     public void Move(double pwrx, double pwry) {
         double gear_pwr = gear_mode / MAX_GEAR;
         m1.setPower(gear_pwr*(-pwrx-pwry));
@@ -94,10 +165,8 @@ public class Dynabytes2025 extends LinearOpMode {
     }
 
     public void fieldDriveMove(double pwr_x, double pwr_y) {
-        double pi = 3.1415926;
-
         /* Adjust Joystick X/Y inputs by navX MXP yaw angle */
-        double yaw_radians = yaw_angle * pi/180;
+        double yaw_radians = Math.toRadians(yaw_angle);
         double temp = pwr_y * Math.cos(yaw_radians) + pwr_x * Math.sin(yaw_radians);
         pwr_x = -pwr_y * Math.sin(yaw_radians) + pwr_x * Math.cos(yaw_radians);
         pwr_y = temp;
