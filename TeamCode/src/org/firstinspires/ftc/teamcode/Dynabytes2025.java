@@ -49,17 +49,17 @@ public class Dynabytes2025 extends LinearOpMode {
         while (!isStarted()) {
             if (gamepad1.dpad_left) {
                 System.out.println("BLUE TEAM + Away from Obelisk");
-                start_pos = new Pose2d(-5.25 * 12, 2.75 * 12, Math.toRadians(0));
+                start_pos = TrajectoryStorage.blue_down_pos;
             } else if (gamepad1.dpad_right) {
                 System.out.println("RED TEAM + Away from Obelisk");
-                start_pos = new Pose2d(-5.25 * 12, -2.75 * 12, Math.toRadians(0));
+                start_pos = TrajectoryStorage.red_down_pos;
             } else if (gamepad1.dpad_up) {
                 System.out.println("RED TEAM + In Launching Zone");
-                start_pos = new Pose2d(4*12, -4*12, Math.toRadians(135));
+                start_pos = TrajectoryStorage.red_up_pos;
 
             } else if (gamepad1.dpad_down) {
                 System.out.println("BLUE TEAM + In Launching Zone");
-                start_pos = new Pose2d(4*12, 4*12, Math.toRadians(225));
+                start_pos = TrajectoryStorage.blue_up_pos;
             }
 
         }
