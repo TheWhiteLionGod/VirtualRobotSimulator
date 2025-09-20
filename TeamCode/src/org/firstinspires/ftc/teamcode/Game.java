@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.auto.AutoPickAndShoot;
 import org.firstinspires.ftc.teamcode.auto.SampleAuto;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -15,19 +16,17 @@ public class Game extends LinearOpMode {
     @Override
     public void runOpMode() {
         drive = new SampleMecanumDrive(hardwareMap);
-        auto = new SampleAuto();
+        auto = new AutoPickAndShoot();
         teleop = new Dynabytes2025();
 
         waitForStart();
 
         // Starting Autonomous
         auto.configure();
-
         auto.drive = drive;
-        auto.game = this;
 
+        auto.game = this;
         auto.run();
-        System.out.println("HELLO");
 
         // Starting TeleOp
         teleop.drive = drive;
