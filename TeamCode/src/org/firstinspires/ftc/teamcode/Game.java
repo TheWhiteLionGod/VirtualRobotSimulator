@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 public class Game extends LinearOpMode {
     SampleMecanumDrive drive;
     Robot auto;
-    Dynabytes2025 teleop;
+    Robot teleop;
 
     @Override
     public void runOpMode() {
@@ -28,8 +28,14 @@ public class Game extends LinearOpMode {
         auto.game = this;
         auto.run();
 
+        // Fixing Drive Position
+        drive.setPoseEstimate(auto.drive.getPoseEstimate());
+
         // Starting TeleOp
+        teleop.configure();
         teleop.drive = drive;
-        teleop.runOpMode();
+
+        teleop.game = this;
+        teleop.run();
     }
 }
