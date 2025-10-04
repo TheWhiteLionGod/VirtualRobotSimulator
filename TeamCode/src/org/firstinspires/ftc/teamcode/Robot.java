@@ -1,37 +1,34 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-@TeleOp(name = "AutoPickAndShoot", group = "FTC2025")
-public class AutoPickAndShoot extends LinearOpMode {
-    SampleMecanumDrive drive;
-    
+@Disabled
+@TeleOp(name = "Robot", group = "FTC2025")
+public abstract class Robot extends LinearOpMode {
+    public SampleMecanumDrive drive;
+    public LinearOpMode game = this;
+
     @Override
     public void runOpMode() {
-        // Creating Drivetrain
-        drive = new SampleMecanumDrive(hardwareMap);
-        TrajectoryStorage.start_pos = TrajectoryStorage.blue_down_pos;
-
-        TrajectoryStorage.buildTrajectories(drive); // Builds Trajectory Here
-        drive.setPoseEstimate(TrajectoryStorage.start_pos);
-
+        configure();
         waitForStart();
+        run();
+    }
 
-        // Moving Robot
-        moveRobot(TrajectoryStorage.getBlueBalls);
-        moveRobot(TrajectoryStorage.shootBlue);
+    public boolean canRun() {
+        return game.opModeIsActive();
     }
 
     public void moveRobot(TrajectorySequence traj) {
         drive.followTrajectorySequenceAsync(traj);
 
         // Updating Robot Position
-        while (opModeIsActive() && drive.isBusy()) {
+        while (canRun() && drive.isBusy()) {
             drive.update();
             telemetry.addData("Robot Position: ", drive.getPoseEstimate());
             telemetry.update();
@@ -42,4 +39,7 @@ public class AutoPickAndShoot extends LinearOpMode {
         telemetry.addData("Current Position: ", drive.getPoseEstimate());
         telemetry.update();
     }
+
+    abstract public void configure();
+    abstract public void run();
 }

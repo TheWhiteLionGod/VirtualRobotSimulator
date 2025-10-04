@@ -1,31 +1,23 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.path.EmptyPathSegmentException;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.IMU;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @TeleOp(name = "Controller", group = "FTC2025")
-public class Dynabytes2025 extends LinearOpMode {
+public class Dynabytes2025 extends Robot {
     DcMotor m1, m2, m3, m4;
-    IMU imu;
-    SampleMecanumDrive drive;
     double yaw_angle;
     double gear_mode = 3.0;
     boolean on_gear_switch_cooldown = false;
     double gear_switch_time;
     double MAX_GEAR = 3.0;
 
-    public void runOpMode(){
+    @Override
+    public void configure() {
         m1 = hardwareMap.dcMotor.get("back_left_motor");
         m2 = hardwareMap.dcMotor.get("front_left_motor");
         m3 = hardwareMap.dcMotor.get("front_right_motor");
@@ -35,50 +27,15 @@ public class Dynabytes2025 extends LinearOpMode {
         m2.setDirection(DcMotor.Direction.REVERSE);
 
         drive = new SampleMecanumDrive(hardwareMap);
+    }
 
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-
-        imu = hardwareMap.get(IMU.class, "imu");
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-        imu.resetYaw();
-
-        // Configuring Robot Position During Init
-        Pose2d start_pos = null;
-        while (!isStarted()) {
-            if (gamepad1.dpad_left) {
-                System.out.println("BLUE TEAM + Away from Obelisk");
-                start_pos = TrajectoryStorage.blue_down_pos;
-            } else if (gamepad1.dpad_right) {
-                System.out.println("RED TEAM + Away from Obelisk");
-                start_pos = TrajectoryStorage.red_down_pos;
-            } else if (gamepad1.dpad_up) {
-                System.out.println("RED TEAM + In Launching Zone");
-                start_pos = TrajectoryStorage.red_up_pos;
-
-            } else if (gamepad1.dpad_down) {
-                System.out.println("BLUE TEAM + In Launching Zone");
-                start_pos = TrajectoryStorage.blue_up_pos;
-            }
-
-        }
-
-        if (start_pos == null) {
-            System.out.println("ROBOT NOT CONFIGURED");
-            return;
-        }
-
-        drive.setPoseEstimate(start_pos);
-
-        while (opModeIsActive()) {
+    @Override
+    public void run() {
+        while (canRun()) {
             // START
-            // Updating Yaw of Robot
-            YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-            yaw_angle = orientation.getYaw(AngleUnit.DEGREES);
-
             // Update Position in Road Runner
             drive.update();
+            yaw_angle = Math.toDegrees(drive.getPoseEstimate().getHeading());
     
             // Switching Gears
             if (gamepad1.right_bumper) {
