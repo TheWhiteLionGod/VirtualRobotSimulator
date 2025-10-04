@@ -30,8 +30,7 @@ public class Dynabytes2025 extends Robot {
     }
 
     @Override
-    public void run(){
-        System.out.println(canRun());
+    public void run() {
         while (canRun()) {
             // START
             // Update Position in Road Runner
