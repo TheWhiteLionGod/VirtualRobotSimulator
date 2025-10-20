@@ -1,0 +1,3 @@
+[submodule "TeamCode/src/org/firstinspires/ftc/TeamCode"]
+	path = TeamCode/src/org/firstinspires/ftc/teamcode
+	url = git@github.com:TheWhiteLionGod/TeamCode
