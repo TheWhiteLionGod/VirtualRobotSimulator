@@ -85,10 +85,10 @@ public abstract class MecanumPhysicsBase extends VirtualBot {
         super.initialize();
         hardwareMap.setActive(true);
         motors = new DcMotorExImpl[]{
-                (DcMotorExImpl) hardwareMap.get(DcMotorEx.class, "back_left_motor"),
-                (DcMotorExImpl) hardwareMap.get(DcMotorEx.class, "front_left_motor"),
-                (DcMotorExImpl) hardwareMap.get(DcMotorEx.class, "front_right_motor"),
-                (DcMotorExImpl) hardwareMap.get(DcMotorEx.class, "back_right_motor")
+                (DcMotorExImpl) hardwareMap.get(DcMotorEx.class, "BL"),
+                (DcMotorExImpl) hardwareMap.get(DcMotorEx.class, "FL"),
+                (DcMotorExImpl) hardwareMap.get(DcMotorEx.class, "FR"),
+                (DcMotorExImpl) hardwareMap.get(DcMotorEx.class, "BR")
         };
         distanceSensors = new VirtualRobotController.DistanceSensorImpl[]{
                 hardwareMap.get(VirtualRobotController.DistanceSensorImpl.class, "front_distance"),
@@ -156,7 +156,7 @@ public abstract class MecanumPhysicsBase extends VirtualBot {
      */
     protected void createHardwareMap() {
         hardwareMap = new HardwareMap();
-        String[] motorNames = new String[]{"back_left_motor", "front_left_motor", "front_right_motor", "back_right_motor"};
+        String[] motorNames = new String[]{"BL", "FL", "FR", "BR"};
         for (int i=0; i<4; i++){
             hardwareMap.put(motorNames[i], new DcMotorExImpl(MOTOR_TYPE, motorController0, i));
         }
