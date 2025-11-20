@@ -40,7 +40,7 @@ public enum Trajectories {
 
     public static TrajectorySequence trajTo(Pose2d pose, RoadRunner roadRunner) {
         return roadRunner.trajSeqBuilder(roadRunner.getPose())
-                .lineToLinearHeading(pose)
+                .lineToSplineHeading(pose)
                 .build();
     }
 }
