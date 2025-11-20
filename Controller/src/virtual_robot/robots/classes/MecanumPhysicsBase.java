@@ -98,7 +98,7 @@ public abstract class MecanumPhysicsBase extends VirtualBot {
         };
         imu = hardwareMap.get(BNO055IMUImpl.class, "imu");
         imuNew = hardwareMap.get(BNO055IMUNew.class, "imu");
-        colorSensor = (VirtualRobotController.ColorSensorImpl) hardwareMap.colorSensor.get("color_sensor");
+        colorSensor = (VirtualRobotController.ColorSensorImpl) hardwareMap.colorSensor.get("ColorSensor");
 
         sparkFunOTOSInternal = hardwareMap.get(SparkFunOTOSInternal.class, "sensor_otos");
         goBildaPinpointDriverInternal = hardwareMap.get(GoBildaPinpointDriverInternal.class, "pinpoint");
@@ -156,15 +156,15 @@ public abstract class MecanumPhysicsBase extends VirtualBot {
      */
     protected void createHardwareMap() {
         hardwareMap = new HardwareMap();
-        String[] motorNames = new String[]{"BL", "FL", "FR", "BR"};
-        for (int i=0; i<4; i++){
+        String[] motorNames = new String[]{"BL", "FL", "FR", "BR", "DcMotor"};
+        for (int i=0; i<5; i++){
             hardwareMap.put(motorNames[i], new DcMotorExImpl(MOTOR_TYPE, motorController0, i));
         }
         String[] distNames = new String[]{"front_distance", "left_distance", "back_distance", "right_distance"};
         for (String name : distNames) hardwareMap.put(name, controller.new DistanceSensorImpl());
         hardwareMap.put("imu", new BNO055IMUImpl(this, 10));
         hardwareMap.put("imu", new BNO055IMUNew(this, 10));
-        hardwareMap.put("color_sensor", controller.new ColorSensorImpl());
+        hardwareMap.put("ColorSensor", controller.new ColorSensorImpl());
         hardwareMap.put("sensor_otos", new SparkFunOTOSInternal(odo));
         hardwareMap.put("pinpoint", new GoBildaPinpointDriverInternal(odo));
         hardwareMap.put("octoquad", new OctoQuadImpl());
