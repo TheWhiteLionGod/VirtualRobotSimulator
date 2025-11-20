@@ -14,6 +14,9 @@ public class Lift {
         leftLift = hardwareMap.get(Servo.class, "Servo");
         rightLift = hardwareMap.get(Servo.class, "Servo");
         rightLift.setDirection(Servo.Direction.REVERSE);
+
+        leftLift.setPosition(Constants.LIFT_DOWN_POS);
+        rightLift.setPosition(Constants.LIFT_DOWN_POS);
         this.telemetry = telemetry;
     }
 
