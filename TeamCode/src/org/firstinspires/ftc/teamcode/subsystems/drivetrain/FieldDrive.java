@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.subsystems.sensor.ImuSensor;
 
 public class FieldDrive {
     private final DcMotorEx BL, FL, FR, BR;
@@ -27,16 +28,30 @@ public class FieldDrive {
         this.telemetry = telemetry;
     }
 
+    // Auto Commands
+    public void forward(double curYaw) {
+        fieldDrive(1, 0, 0, curYaw);
+    }
+
+    public void backward(double curYaw) {
+        fieldDrive(-1, 0, 0, curYaw);
+    }
+
+    public void left(double curYaw) {
+        fieldDrive(0, -1, 0, curYaw);
+    }
+
+    public void right(double curYaw) {
+        fieldDrive(0, 1, 0, curYaw);
+    }
+
+
     // Field Drive Movement
     public void fieldDrive(double forward, double strafe, double turn, double curYaw) {
         /* Adjust Joystick X/Y inputs by navX MXP yaw angle */
-        double temp = forward * Math.cos(-curYaw) + strafe * Math.sin(-curYaw);
-        strafe = -forward * Math.sin(-curYaw) + strafe * Math.cos(-curYaw);
-        forward = temp;
-
-        /* At this point, Joystick X/Y (strafe/forward) vectors have been */
-        /* rotated by the gyro angle, and can be sent to drive system */
-        robotDrive(forward, strafe, turn);
+        double rotX = strafe * Math.cos(-curYaw) - forward * Math.sin(-curYaw);
+        double rotY = strafe * Math.sin(-curYaw) + forward * Math.cos(-curYaw);
+        robotDrive(rotY, rotX, turn);
     }
 
     // Regular Movement
@@ -61,6 +76,16 @@ public class FieldDrive {
         FR.setPower(frontRight);
         BR.setPower(backRight);
         telemetry.addLine("Drivetrain Moving");
+    }
+
+    public void turnTo(ImuSensor imu, double targetYaw) {
+        double err = imu.getYawDegrees() - targetYaw;
+
+        while (Math.abs(err) > 1) {
+            System.out.println("Error: " + err);
+            err = imu.getYawDegrees() - targetYaw;
+            robotDrive(0, 0, err * 0.01);
+        }
     }
 
     public void stop() {

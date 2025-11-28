@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
-
+import org.firstinspires.ftc.teamcode.subsystems.sensor.ColorInput;
 import java.time.Duration;
 import java.time.Instant;
 

@@ -22,7 +22,7 @@ public enum Trajectories {
 
                         .splineToSplineHeading(new Pose2d(4*12, 2*12, Math.toRadians(180)), Math.toRadians(180))
                         .build();
-                
+
             default:
                 throw new IllegalStateException("Unknown trajectory type");
         }

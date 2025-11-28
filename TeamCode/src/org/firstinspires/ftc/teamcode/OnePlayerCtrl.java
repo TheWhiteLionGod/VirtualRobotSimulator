@@ -98,7 +98,7 @@ public class OnePlayerCtrl extends Dynawheels {
     public void handleOuttake() {
         // Update State
         shooter.updateState();
-        
+
         // Lift
         if (gamepad1.y) {
             shooter.lift.up();

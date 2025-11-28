@@ -156,8 +156,8 @@ public abstract class MecanumPhysicsBase extends VirtualBot {
      */
     protected void createHardwareMap() {
         hardwareMap = new HardwareMap();
-        String[] motorNames = new String[]{"BL", "FL", "FR", "BR", "DcMotor"};
-        for (int i=0; i<5; i++){
+        String[] motorNames = new String[]{"BL", "FL", "FR", "BR", "Roller", "Shooter"};
+        for (int i=0; i<motorNames.length; i++){
             hardwareMap.put(motorNames[i], new DcMotorExImpl(MOTOR_TYPE, motorController0, i));
         }
         String[] distNames = new String[]{"front_distance", "left_distance", "back_distance", "right_distance"};

@@ -20,7 +20,7 @@ public class Shooter {
     private States state = States.IDLE;
 
     public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
-        shooter = hardwareMap.get(DcMotorEx.class, "DcMotor");
+        shooter = hardwareMap.get(DcMotorEx.class, "Shooter");
         lift = new Lift(hardwareMap, telemetry);
         this.telemetry = telemetry;
     }

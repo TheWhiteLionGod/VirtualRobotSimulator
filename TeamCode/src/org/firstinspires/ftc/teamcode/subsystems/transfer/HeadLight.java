@@ -10,8 +10,8 @@ public class HeadLight {
     private final Telemetry telemetry;
 
     public HeadLight(HardwareMap hardwareMap, Telemetry telemetry) {
-        greenLight = hardwareMap.get(Servo.class, "Servo");
-        purpleLight = hardwareMap.get(Servo.class, "Servo");
+        greenLight = hardwareMap.get(Servo.class, "GreenLight");
+        purpleLight = hardwareMap.get(Servo.class, "PurpleLight");
         this.telemetry = telemetry;
     }
 

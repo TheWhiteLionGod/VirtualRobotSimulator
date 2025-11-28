@@ -11,8 +11,8 @@ public class Lift {
     private final Telemetry telemetry;
 
     public Lift(HardwareMap hardwareMap, Telemetry telemetry) {
-        leftLift = hardwareMap.get(Servo.class, "Servo");
-        rightLift = hardwareMap.get(Servo.class, "Servo");
+        leftLift = hardwareMap.get(Servo.class, "LeftLift");
+        rightLift = hardwareMap.get(Servo.class, "RightLift");
         rightLift.setDirection(Servo.Direction.REVERSE);
 
         leftLift.setPosition(Constants.LIFT_DOWN_POS);
